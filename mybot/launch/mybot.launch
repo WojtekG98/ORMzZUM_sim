@@ -84,5 +84,7 @@
     <!-- rosparam param="yea_seq">[-135,-135,-135,-45,-90,45,45]</rosparam -->
   </node>
   <node pkg="mybot" type="log.py" name="logger"/>
+  <node pkg="mybot" type="lin_vel_ml.py" name="lin_vel_ml"/>
+  <node pkg="mybot" type="ang_vel_ml.py" name="ang_vel_ml"/>
   <!-- node pkg="rosbag" type="record" name="rosbag" args="-o $(find mybot)/rosbag_recordings/laser_scan_state /mybot/laser_scan /mybot/state"/ -->
 </launch>
