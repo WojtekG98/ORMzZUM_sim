@@ -1,0 +1,46 @@
+<launch>
+  <arg name="scan_topic"  default="/mybot/laser_scan" />
+  <arg name="base_frame"  default="base_footprint"/>
+  <arg name="odom_frame"  default="odom"/>
+  
+  <!-- Robot pose -->
+  <arg name="x" default="-4"/>
+  <arg name="y" default="0"/>
+
+  <!--Gazebo world launch file-->
+  
+  <!-- <include file="$(find gazebo_ros)/launch/willowgarage_world.launch"> -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="worlds/willowgarage.world"/>
+    <arg name="gui" value="false"/>
+  </include>
+  
+  <!--Robot Description from URDF-->
+  <param name="robot_description" command="$(find xacro)/xacro $(find mybot)/urdf/mybot.xacro"/>
+  <param name="use_gui" value="false"/>
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0 0 0.025 0 0 0 /base_link /mybot/laser_scan 30" />
+  <!-- node pkg="tf" type="static_transform_publisher" name="map_to_base_link" args="$(arg x) $(arg y) 0 0 0 0 /base_link /map 30" / -->
+  <!--Nodes-->
+  
+  <!-- converts joint states to TF transforms -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"/>
+  <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model mybot -x $(arg x) -y $(arg y)" output="screen"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find mybot)/map/map.yaml"/>
+  <node pkg="amcl" type="amcl" name="amcl">
+    <param name="initial_pose_x" value="$(arg x)"/>
+    <param name="initial_pose_y" value="$(arg y)"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
+  </node>
+  
+  <arg name="node_start_delay" default="15.0" />  
+  <node name="eight_controller" pkg="mybot" type="eight.py" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' " required="true" output="screen"/>
+  
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mybot)/rviz/mybot.rviz" required="true"/>
+  
+  
+  <node pkg="mybot" type="log.py" name="logger"/>
+  <node pkg="mybot" type="logpos.py" name="poslogger"/>
+  <node pkg="mybot" type="lin_vel_ml.py" name="lin_vel_ml"/>
+  <node pkg="mybot" type="ang_vel_ml.py" name="ang_vel_ml"/>
+</launch>

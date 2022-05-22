@@ -5,7 +5,7 @@ from geometry_msgs.msg import Twist
 
 def mybot_velocity_commands(velocity, time):
   # Velocity publisher
-  vel_pub = rospy.Publisher('/mybot/cmd_vel', Twist, queue_size=10)
+  vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
   rospy.init_node('mybot_cmd_vel', anonymous=True)
 
   msg = Twist()
@@ -15,7 +15,9 @@ def mybot_velocity_commands(velocity, time):
   msg.angular.x = 0
   msg.angular.y = 0
   msg.angular.z = 0
+  print(velocity)
   while vel_pub.get_num_connections() < 1:
+     print("pass")
      pass
      # wait for a connection to publisher
      # you can do whatever you like here or simply do nothing

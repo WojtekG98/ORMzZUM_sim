@@ -28,8 +28,15 @@ def printall():
     global scan, new_scan, last_scan
     if new_scan and last_scan is not None:
         all_diffs = []
+        rolled_lengths = np.roll(last_scan.ranges,1)  
         for i in range(0, len(scan.ranges)):
-            all_diffs.append(scan.ranges[i] - last_scan.ranges[i])
+            scan1 = scan.ranges[i]
+            scan2 = rolled_lengths[i]
+            if scan1 == float('inf'):
+                scan1 = 0
+            if scan2 == float('inf'):
+                scan2 = 0  
+            all_diffs.append(scan1 - scan2)
         ind = [x for x in range(0, 720, int(720/8))]
         eight_diffs = [all_diffs[i] for i in ind]
         #txt = [str(x) for x in eight_diffs]
