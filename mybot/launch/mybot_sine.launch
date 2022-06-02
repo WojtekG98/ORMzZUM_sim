@@ -2,10 +2,7 @@
   <arg name="scan_topic"  default="/mybot/laser_scan" />
   <arg name="base_frame"  default="base_footprint"/>
   <arg name="odom_frame"  default="odom"/>
-  
-  <!-- Robot pose -->
-  <arg name="x" default="0"/>
-  <arg name="y" default="0"/>
+  <arg name="cmd_vel_topic" default="move_base_cmd_vel" />
 
   <!--Gazebo world launch file-->
   
@@ -25,7 +22,7 @@
   <!-- converts joint states to TF transforms -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"/>
-  <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model mybot -x $(arg x) -y $(arg y)" output="screen"/>
+  <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model mybot" output="screen"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(find mybot)/map/map.yaml"/>
   <node pkg="amcl" type="amcl" name="amcl">
     <param name="initial_pose_x" value="0"/>
@@ -75,18 +72,21 @@
     <rosparam file="$(find mybot)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find mybot)/config/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find mybot)/config/global_costmap_params.yaml" command="load" /> 
-    <rosparam file="$(find mybot)/config/base_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find mybot)/config/base_local_planner_params_sine.yaml" command="load" />
     <remap from="scan" to="$(arg scan_topic)"/>
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
   </node>
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mybot)/rviz/mybot.rviz" required="true"/>
 
+  <!-- node pkg="mybot" type="simple_navigation_goals.py" name="simple_navigation_goals" output="screen" respawn="false"/ -->
   <!--Run move_base_seqs node-->
   <node pkg="mybot" type="move_base_seq.py" name="move_base_seq" output="screen" required="true">
-    <rosparam param="p_seq">[-16, 0.3, 0]</rosparam>
-    <rosparam param="yea_seq">[-180]</rosparam>
+    <!-- rosparam param="p_seq">[-3, -3, 0, -4, -4, 0, -5, -5, 0, -2, -2, 0, -1, -1, 0, 0, 0, 0]</rosparam -->
+    <rosparam file="$(find mybot)/config/first_set_of_points.yaml" command="load" />
+    <!-- rosparam param="yea_seq">[-135,-135,-135,-45,-90,45,45]</rosparam -->
   </node>
   <node pkg="mybot" type="log.py" name="logger"/>
-  <node pkg="mybot" type="logpos.py" name="poslogger"/>
   <node pkg="mybot" type="lin_vel_ml.py" name="lin_vel_ml"/>
   <node pkg="mybot" type="ang_vel_ml.py" name="ang_vel_ml"/>
+  <node pkg="mybot" type="max_velocity_controller.py" name="max_velocity_controller"/>
 </launch>

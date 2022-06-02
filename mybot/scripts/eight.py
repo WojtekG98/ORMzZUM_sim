@@ -35,16 +35,16 @@ def mybot_velocity_commands():
   msg.angular.x = 0
   msg.angular.y = 0
   msg.angular.z = 0
-  time_to_move_forward = 3
+  time_to_move_forward = 3.5
   for i in range(1, 5):
     t_end = time.time() + time_to_move_forward 
     while time.time() < t_end:
       vel_pub.publish(msg)
     
-    msg.angular.z = -1.4
-    msg.linear.x = 0.3
+    msg.angular.z = -0.7
+    msg.linear.x = 0.5
     vel_pub.publish(msg)
-    while abs(yaw) < math.pi - 0.1:
+    while abs(yaw) < math.pi - 0.05:
       vel_pub.publish(msg)
     while abs(yaw) > 2.356:
       vel_pub.publish(msg)
@@ -55,10 +55,12 @@ def mybot_velocity_commands():
     while time.time() < t_end:
       vel_pub.publish(msg)
     
-    msg.angular.z = 1.4
-    msg.linear.x = 0.3
+    msg.angular.z = 0.7
+    msg.linear.x = 0.5
     vel_pub.publish(msg)
-    while abs(yaw) > 0.1:
+    while abs(yaw) > 0.05:
+      vel_pub.publish(msg)
+    while abs(yaw) < 0.785:
       vel_pub.publish(msg)
     #while abs(yaw) < 0.785:
     #  vel_pub.publish(msg)
