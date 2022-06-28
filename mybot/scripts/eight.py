@@ -27,9 +27,9 @@ def mybot_velocity_commands():
   # Velocity publisher
   global vel_pub, x, y, z, roll, pitch, yaw
 
-
+  factor = 1/2
   msg = Twist()
-  msg.linear.x = 0.5
+  msg.linear.x = 0.5*factor
   msg.linear.y = 0
   msg.linear.z = 0
   msg.angular.x = 0
@@ -42,7 +42,7 @@ def mybot_velocity_commands():
       vel_pub.publish(msg)
     
     msg.angular.z = -0.7
-    msg.linear.x = 0.5
+    msg.linear.x = 0.5*factor
     vel_pub.publish(msg)
     while abs(yaw) < math.pi - 0.05:
       vel_pub.publish(msg)
@@ -50,13 +50,13 @@ def mybot_velocity_commands():
       vel_pub.publish(msg)
     
     msg.angular.z = 0
-    msg.linear.x = 0.5
+    msg.linear.x = 0.5*factor
     t_end = time.time() + 2*time_to_move_forward 
     while time.time() < t_end:
       vel_pub.publish(msg)
     
     msg.angular.z = 0.7
-    msg.linear.x = 0.5
+    msg.linear.x = 0.5*factor
     vel_pub.publish(msg)
     while abs(yaw) > 0.05:
       vel_pub.publish(msg)
@@ -66,7 +66,7 @@ def mybot_velocity_commands():
     #  vel_pub.publish(msg)
     
     msg.angular.z = 0
-    msg.linear.x = 0.5
+    msg.linear.x = 0.5*factor
     t_end = time.time() + time_to_move_forward 
     while time.time() < t_end:
       vel_pub.publish(msg)
